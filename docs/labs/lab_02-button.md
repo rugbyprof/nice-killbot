@@ -3,7 +3,7 @@
 **Goal:** wire a momentary push button to the Pi's GPIO header and read
 button presses from a Python script.
 
-<a href="https://images2.imgbox.com/1e/ec/C3NzzwWN_o.png" target="_new"><img src="https://images2.imgbox.com/1e/ec/C3NzzwWN_o.png" alt="Raspberry Pi Button Led Diagram" width="400">
+<a href="https://images2.imgbox.com/1d/59/WJPeeFfg_o.png" target="_new"><img src="https://images2.imgbox.com/1d/59/WJPeeFfg_o.png" alt="Raspberry Pi Button Led Diagram" width="400">
 
 <a href="https://images2.imgbox.com/b4/25/Iuw2LyrT_o.png" target="_new"><img src="https://images2.imgbox.com/b4/25/Iuw2LyrT_o.png" alt="Raspberry Pi 40-pin GPIO pinout" width="400">
 
