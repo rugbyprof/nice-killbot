@@ -112,7 +112,7 @@ git push
 
 1.  [Blink LED](./labs/lab_01-blink_led.md)
 2.  [Button](./labs/lab_02-button.md)
-3.  Motors
+3.  [Motors](./labs/lab_03-motors.md)
 4.  PWM
 5.  IR Remote
 6.  Obstacle Avoidance
