@@ -111,7 +111,7 @@ git push
 # 14. Suggested Labs
 
 1.  [Blink LED](./labs/lab_01-blink_led.md)
-2.  Button
+2.  [Button](./labs/lab_02-button.md)
 3.  Motors
 4.  PWM
 5.  IR Remote
