@@ -7,8 +7,8 @@ robotics with the Raspberry Pi.
 
 # Table of Contents
 
-1.  First Setup
-2.  Linux Essentials
+1.  [First Setup](raspberry-pi-first-setup.md)
+2.  [Linux Essentials](linux-essentials.md)
 3.  VS Code Remote SSH
 4.  Project Organization
 5.  Python Virtual Environments
@@ -22,7 +22,7 @@ robotics with the Raspberry Pi.
 13. Troubleshooting
 14. Suggested Lab Sequence
 
-------------------------------------------------------------------------
+---
 
 # 1. First Setup
 
@@ -40,13 +40,13 @@ navigation, SSH, SSH keys, and wireless/network debugging commands
 
 Install the Remote - SSH extension and connect to:
 
-``` text
+```text
 username@hostname.local
 ```
 
 # 4. Project Organization
 
-``` text
+```text
 ~/projects/
   smartcar-ir/
   smartcar-obstacle/
@@ -55,7 +55,7 @@ username@hostname.local
 
 # 5. Python Virtual Environments
 
-``` bash
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install gpiozero pigpio rich
@@ -63,7 +63,7 @@ pip install gpiozero pigpio rich
 
 # 6. GPIO Basics
 
-``` python
+```python
 from gpiozero import LED
 led = LED(17)
 led.on()
@@ -84,7 +84,7 @@ IR -\> Bluetooth -\> Wi-Fi/MQTT.
 
 # 10. Camera
 
-``` bash
+```bash
 pip install opencv-python numpy
 ```
 
@@ -94,7 +94,7 @@ Develop by running `python main.py`. Later use `systemd` for auto-start.
 
 # 12. Git
 
-``` bash
+```bash
 git clone URL
 git add .
 git commit -m "message"
@@ -103,10 +103,10 @@ git push
 
 # 13. Troubleshooting
 
--   Check SSH
--   Check Wi-Fi
--   Check power
--   Verify common ground
+- Check SSH
+- Check Wi-Fi
+- Check power
+- Verify common ground
 
 # 14. Suggested Labs
 
