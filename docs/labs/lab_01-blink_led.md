@@ -3,6 +3,8 @@
 **Goal:** wire an LED to the Pi's GPIO header and blink it on/off from a
 Python script.
 
+<a href="https://images2.imgbox.com/74/6e/oFYXUW8F_o.png"><img src="https://images2.imgbox.com/74/6e/oFYXUW8F_o.png" width="400px"></a>
+
 **Parts needed**
 
 - Raspberry Pi (powered off while wiring)
