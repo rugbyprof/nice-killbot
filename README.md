@@ -12,5 +12,6 @@ AI car project assignment — Raspberry Pi-based robot: setup docs, dev environm
 | [docs/images/pinout.png](docs/images/pinout.png) | Pi GPIO pinout reference image |
 | [griffins_setup_scripts/chillbot_bootstrap.sh](griffins_setup_scripts/chillbot_bootstrap.sh) | Phased bootstrap script for the dev environment on the Pi (terminal tools, GPIO/camera libs, Python venv, etc.) |
 | [griffins_setup_scripts/setup_pi_shell.py](griffins_setup_scripts/setup_pi_shell.py) | Configures zsh + oh-my-zsh on the Pi over SSH for both `griffin` and `root` |
+| [killbot-controller/](killbot-controller/README.md) | ESP32-based IR remote (joystick + transmitter) for manually driving the car before autonomy is added |
 
 More to come as the project develops.
