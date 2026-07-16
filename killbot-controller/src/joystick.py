@@ -1,10 +1,14 @@
 """
-Joystick-to-command driver for a KY-023-style dual-axis joystick.
+ESP32 Joystick-to-command driver for a KY-023-style dual-axis joystick.
 
 Reads the joystick's X/Y ADC lines and SW (button) line, applies
 calibration and a dead zone, and classifies the result into one of the
 numeric command constants defined below (STOP, FORWARD, ..., diagonals,
 JOYSTICK_BUTTON).
+
+Each transmitted command is mirrored to an OLED status display via the
+oled_screen module (see oled_screen.py). This file only calls
+oled_screen's public functions and does not depend on its internals.
 
 Public API for callers importing this as a module:
     Constants:
@@ -27,6 +31,8 @@ constants/functions (e.g. from a test) will not start it.
 
 import machine
 import time
+
+import oled_screen
 
 # =====================================================================
 # HARDWARE PIN CONFIGURATION
@@ -264,6 +270,11 @@ def main():
         # if current_direction != STOP:
         if time.ticks_diff(current_time, last_transmit_time) > DEBOUNCE_DELAY:
             transmit_ir(current_direction)
+            oled_screen.show_status(
+                COMMAND_NAMES.get(current_direction, "UNKNOWN"),
+                raw_x,
+                raw_y,
+            )
             last_transmit_time = current_time
 
             last_direction = current_direction
