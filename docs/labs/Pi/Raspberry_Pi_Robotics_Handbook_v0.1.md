@@ -110,11 +110,12 @@ git push
 
 # 14. Suggested Labs
 
-1.  [Blink LED](./labs/lab_01-blink_led.md)
-2.  [Button](./labs/lab_02-button.md)
-3.  [Motors](./labs/lab_03-motors.md)
+1.  [Blink LED](./lab_01-blink_led.md)
+2.  [Button](./lab_02-button.md)
+3.  [Motors](./lab_03-motors.md)
 4.  PWM
-5.  IR Remote
-6.  Obstacle Avoidance
-7.  Camera
-8.  Autonomous Robot
+5.  [IR Remote](./lab_04-ir_receiver.md)
+6.  [OLED Screen](./lab_05-oled_screen.md)
+7.  Obstacle Avoidance
+8.  Camera
+9.  Autonomous Robot

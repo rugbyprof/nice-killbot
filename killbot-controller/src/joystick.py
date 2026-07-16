@@ -7,8 +7,9 @@ numeric command constants defined below (STOP, FORWARD, ..., diagonals,
 JOYSTICK_BUTTON).
 
 Each transmitted command is mirrored to an OLED status display via the
-oled_screen module (see oled_screen.py). This file only calls
-oled_screen's public functions and does not depend on its internals.
+oled_screen module (see oled_screen.py), and sent over IR via the
+ir_transmitter module (see ir_transmitter.py). This file only calls
+their public functions and does not depend on their internals.
 
 Public API for callers importing this as a module:
     Constants:
@@ -32,6 +33,7 @@ constants/functions (e.g. from a test) will not start it.
 import machine
 import time
 
+import ir_transmitter
 import oled_screen
 
 # =====================================================================
@@ -243,9 +245,9 @@ def get_direction(x, y):
 
 
 def transmit_ir(command):
-    """Stub function where you place your MicroPython IR library code."""
+    """Send `command` over IR and print it for debugging."""
     print(f"TRANSMITTING IR CODE FOR: {COMMAND_NAMES.get(command, 'UNKNOWN')}")
-    # Example: ir_tx.transmit(NEC_CODES[command])
+    ir_transmitter.send_ir_command(command)
 
 
 def main():
@@ -283,4 +285,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
+        print("Controller stopped.")
+    finally:
+        # Make absolutely sure the IR transmitter is disabled when the
+        # program exits or encounters an error.
+        ir_transmitter.ir_off()
