@@ -34,7 +34,8 @@ import machine
 import time
 
 import ir_transmitter
-import oled_screen
+
+# import oled_screen
 
 # =====================================================================
 # HARDWARE PIN CONFIGURATION
@@ -254,7 +255,7 @@ def main():
     """Run the joystick read/transmit loop. Blocks forever."""
     global last_direction, last_transmit_time
 
-    # calibrate_joystick()
+    calibrate_joystick()
 
     while True:
 
@@ -272,11 +273,11 @@ def main():
         # if current_direction != STOP:
         if time.ticks_diff(current_time, last_transmit_time) > DEBOUNCE_DELAY:
             transmit_ir(current_direction)
-            oled_screen.show_status(
-                COMMAND_NAMES.get(current_direction, "UNKNOWN"),
-                raw_x,
-                raw_y,
-            )
+            # oled_screen.show_status(
+            #     COMMAND_NAMES.get(current_direction, "UNKNOWN"),
+            #     raw_x,
+            #     raw_y,
+            # )
             last_transmit_time = current_time
 
             last_direction = current_direction
