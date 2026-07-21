@@ -2,7 +2,7 @@
 
 <a href="https://images2.imgbox.com/b5/4e/Kk89lTeY_o.png"><img src="https://images2.imgbox.com/b5/4e/Kk89lTeY_o.png" width="400"></a>
 
-[joystick.py](../../../killbot-controller/src/joystick.py)
+[joystick.py](../../../esp32-controller/src/joystick.py)
 
 ---
 
@@ -64,27 +64,30 @@ crash with an I2C error before it ever reads the joystick.
 # Files needed on the ESP32
 
 ```text
-joystick.py
-oled_screen.py
-ssd1306.py
-ir_transmitter.py
+joystick.py          (top-level script, in src/)
+lib/oled_screen.py    (dependency)
+lib/ssd1306.py         (dependency)
+lib/ir_transmitter.py   (dependency)
 ```
 
-`joystick.py` is the driver you'll be editing. The other three (all
-also in `killbot-controller/src/`) are dependencies it imports -
-without all four present, `joystick.py` fails to import.
+`joystick.py` is the driver you'll be editing, living directly in
+`esp32-controller/src/`. The other three are dependencies it
+imports, living in `esp32-controller/src/lib/` - MicroPython
+automatically searches a device's `/lib` folder for imports, so
+`import oled_screen` in `joystick.py` doesn't need to know or care
+that the file lives in a subfolder on your computer.
 
 ---
 
 # Step 1 - Copy the dependency files
 
-These rarely change, so copy them once with `mpremote` (adjust the
-port for your OS - see [Esp32 First Setup, Step
-4](./Esp32-first-setup.md#step-4--plug-in-the-esp32)):
+These rarely change, so copy the whole `lib/` folder once with
+`mpremote` (adjust the port for your OS - see [Esp32 First Setup,
+Step 4](./Esp32-first-setup.md#step-4--plug-in-the-esp32)):
 
 ```bash
-cd killbot-controller
-mpremote connect /dev/cu.SLAB_USBtoUART fs cp src/oled_screen.py src/ssd1306.py src/ir_transmitter.py :
+cd esp32-controller
+mpremote connect /dev/cu.SLAB_USBtoUART fs cp -r src/lib :lib
 ```
 
 ---
@@ -156,17 +159,16 @@ for the second or so it takes to run.
 
 # Uploading permanently
 
-Once the script works, `killbot-controller/upload.sh` copies
-everything in `src/` onto the board (edit the `PORT` variable inside
-it first to match your OS).
+Once the script works, `esp32-controller/upload.sh` copies `src/lib/`
+to the board's `/lib` and every top-level `.py` in `src/` to the board's
+root (edit the `PORT` variable inside it first to match your OS).
 
-**Careful:** `src/` also contains `main.py`, a different project
-(button + rotary-encoder IR transmitter), unrelated to the joystick.
-MicroPython auto-runs whatever is saved as `main.py` on the board at
-boot - so after `upload.sh`, resetting the board runs the encoder
-project, not `joystick.py`. Either delete `main.py` from the board
-after uploading, or keep using `mpremote run src/joystick.py` while
-you're working on this lab instead of relying on autorun.
+`esp32-controller/src/` also contains `button_encoder_remote.py`, a
+different, unrelated project (button + rotary-encoder IR transmitter).
+It won't auto-run or collide with `joystick.py` - MicroPython only
+auto-runs a file specifically named `main.py`, and neither script uses
+that name, so both can sit on the board at once without conflict.
+Run whichever one you want with `mpremote run <file>`.
 
 ---
 
@@ -176,8 +178,8 @@ you're working on this lab instead of relying on autorun.
   wired, isn't powered, or `SDA`/`SCL` are swapped. Double-check the
   wiring table above.
 - **`ImportError` for `oled_screen`, `ssd1306`, or `ir_transmitter`:**
-  one of those files wasn't copied to the board. Run `mpremote fs ls`
-  to confirm all three are present.
+  `src/lib/` wasn't copied to the board's `/lib`. Run `mpremote fs ls
+  :lib` to confirm all three are present there.
 - **Joystick reports a direction while sitting still:** your
   joystick's resting position differs from the default `(2048,
   2048)`. Uncomment `calibrate_joystick()` in `main()` (see

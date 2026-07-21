@@ -1,7 +1,7 @@
 ## Esp32 IR Transmitter
 
-[joystick.py](../../../killbot-controller/src/joystick.py) ·
-[ir_transmitter.py](../../../killbot-controller/src/ir_transmitter.py)
+[joystick.py](../../../esp32-controller/src/joystick.py) ·
+[ir_transmitter.py](../../../esp32-controller/src/lib/ir_transmitter.py)
 
 ---
 
@@ -91,15 +91,17 @@ prints the command name for you to watch over serial, and calls
 
 # Step 1 - Run it
 
+If you already copied `src/lib/` to the board in Lab 1's Step 1,
+`ir_transmitter.py` is already there - `lib/` holds all three
+dependencies together, so there's nothing new to copy for this lab:
+
 ```bash
-cd killbot-controller
-mpremote connect /dev/cu.SLAB_USBtoUART fs cp src/ir_transmitter.py :
+cd esp32-controller
 mpremote connect /dev/cu.SLAB_USBtoUART run src/joystick.py
 ```
 
-(`oled_screen.py` and `ssd1306.py` still need to already be on the
-board from Lab 1, and `ir_transmitter.py` now needs to be there too -
-`joystick.py` imports all three.)
+If you skipped straight to Lab 2, copy the dependencies first: see
+[Lab 1, Step 1](./lab_01-joystick.md#step-1---copy-the-dependency-files).
 
 Move the joystick. You should see the same `TRANSMITTING IR CODE
 FOR: ...` lines as Lab 1, but now an actual 38 kHz signal goes out on
@@ -146,18 +148,18 @@ step.
   bright ambient light. Move the two closer together and point them
   straight at each other.
 - **Pi decodes frames, but the command name is wrong or `UNKNOWN`:**
-  double check `killbot-controller/src/joystick.py`'s `COMMAND_NAMES`
-  still matches the table in `chillbot-controller/src/ir_receiver.py`
+  double check `esp32-controller/src/joystick.py`'s `COMMAND_NAMES`
+  still matches the table in `pi-controller/src/ir_receiver.py`
   - both were written to agree, but if either file gets edited
   independently they can drift apart. The full protocol is documented
   once, in
-  [killbot-controller/docs/protocol.md](../../../killbot-controller/docs/protocol.md).
+  [esp32-controller/docs/protocol.md](../../../esp32-controller/docs/protocol.md).
 - **OLED stops updating / script crashes:** this is unrelated to IR -
   see Lab 1's troubleshooting section for OLED/joystick issues.
 - **Script exits but the transmitter LED stays lit:** shouldn't
   happen - `finally: ir_transmitter.ir_off()` at the bottom of
   `joystick.py` turns the carrier off on any exit, including
   `Ctrl-C`. If it does happen, power-cycle the board.
-- **`ImportError` for `ir_transmitter`:** it wasn't copied to the
-  board. Run `mpremote fs ls` to confirm it's present alongside
-  `oled_screen.py` and `ssd1306.py`.
+- **`ImportError` for `ir_transmitter`:** `src/lib/` wasn't copied to
+  the board's `/lib`. Run `mpremote fs ls :lib` to confirm it's present
+  alongside `oled_screen.py` and `ssd1306.py`.

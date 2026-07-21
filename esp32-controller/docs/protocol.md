@@ -1,15 +1,15 @@
 # IR Protocol
 
-The wire format spoken between `killbot-controller` (ESP32 transmitter)
-and `chillbot-controller` (Raspberry Pi receiver). Both sides implement
+The wire format spoken between `esp32-controller` (ESP32 transmitter)
+and `pi-controller` (Raspberry Pi receiver). Both sides implement
 this independently, so this document is the single source of truth -
 if you change one side's timing or command IDs, update this file and
 the other side to match.
 
 Implementations:
 
-- Transmitter: [`killbot-controller/src/ir_transmitter.py`](../src/ir_transmitter.py)
-- Receiver: [`chillbot-controller/src/ir_receiver.py`](../../chillbot-controller/src/ir_receiver.py)
+- Transmitter: [`esp32-controller/src/lib/ir_transmitter.py`](../src/lib/ir_transmitter.py)
+- Receiver: [`pi-controller/src/ir_receiver.py`](../../pi-controller/src/ir_receiver.py)
 
 ## Framing
 
@@ -28,7 +28,7 @@ byte (`command ^ 0xFF`, LSB-first), final mark. 16 data bits total.
 
 The receiver validates `command ^ inverted_command == 0xFF` and drops
 anything that doesn't check out - this is the only error detection;
-there's no retry/ack, so `killbot-controller` just retransmits the
+there's no retry/ack, so `esp32-controller` just retransmits the
 current command periodically (`DEBOUNCE_DELAY` in `joystick.py`)
 rather than confirming delivery.
 

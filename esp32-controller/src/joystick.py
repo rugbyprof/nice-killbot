@@ -35,7 +35,7 @@ import time
 
 import ir_transmitter
 
-# import oled_screen
+import oled_screen
 
 # =====================================================================
 # HARDWARE PIN CONFIGURATION
@@ -273,11 +273,11 @@ def main():
         # if current_direction != STOP:
         if time.ticks_diff(current_time, last_transmit_time) > DEBOUNCE_DELAY:
             transmit_ir(current_direction)
-            # oled_screen.show_status(
-            #     COMMAND_NAMES.get(current_direction, "UNKNOWN"),
-            #     raw_x,
-            #     raw_y,
-            # )
+            oled_screen.show_status(
+                COMMAND_NAMES.get(current_direction, "UNKNOWN"),
+                raw_x,
+                raw_y,
+            )
             last_transmit_time = current_time
 
             last_direction = current_direction

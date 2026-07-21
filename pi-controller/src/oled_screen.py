@@ -1,7 +1,7 @@
 """
 OLED status display (SSD1306 128x64, I2C, via luma.oled).
 
-Mirrors the public API of killbot-controller's own oled_screen.py so
+Mirrors the public API of esp32-controller's own oled_screen.py so
 both boards' "controller" scripts follow the same shape, even though
 the underlying driver differs (luma.oled here vs. a vendored
 MicroPython ssd1306 driver on the ESP32 side).

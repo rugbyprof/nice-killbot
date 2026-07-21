@@ -1,6 +1,6 @@
 ## Lab 5: OLED Screen
 
-[oled_screen.py](../../../chillbot-controller/src/oled_screen.py)
+[oled_screen.py](../../../pi-controller/src/oled_screen.py)
 
 **Goal:** wire an SSD1306 128x64 I2C OLED display to the Pi and show
 text on it from a Python script.
@@ -75,7 +75,7 @@ some modules) in the grid.
 **Step 6 - Set up the environment**
 
 ```bash
-cd chillbot-controller
+cd pi-controller
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 **Step 7 - The script**
 
 The driver already lives in the repo:
-[`chillbot-controller/src/oled_screen.py`](../../../chillbot-controller/src/oled_screen.py) -
+[`pi-controller/src/oled_screen.py`](../../../pi-controller/src/oled_screen.py) -
 clone/pull the repo onto the Pi (or `scp` just that file over) rather
 than writing it from scratch.
 

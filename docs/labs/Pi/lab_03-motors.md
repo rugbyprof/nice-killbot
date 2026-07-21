@@ -179,3 +179,14 @@ its `MA`/`MB` terminal - it's simpler than changing the code.
 - **`GPIO busy` or permission errors:** make sure no other script is
   already using GPIO5, 6, 13, 19, 16, 26, 20, or 21, and that you're
   in the virtual environment where `gpiozero` is installed.
+
+---
+
+**Next step:** this lab's `motors.py` is a wiring bring-up test - it
+just drives forward then backward. The real version lives at
+[`pi-controller/src/motors.py`](../../../pi-controller/src/motors.py):
+a `drive(command)` function that maps the same command IDs used by
+[Pi Lab 4: IR Receiver](./lab_04-ir_receiver.md) to per-wheel speeds
+(skid-steer turning), wired into
+[`pi-controller/src/main.py`](../../../pi-controller/src/main.py)
+so the car actually drives in response to killbot's IR commands.

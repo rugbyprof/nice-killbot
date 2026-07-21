@@ -1,14 +1,14 @@
 """
 38 kHz IR receiver (NEC-style pulse-distance protocol via pigpio).
 
-Decodes frames sent by killbot-controller's ir_transmitter.py (see
-killbot-controller/docs/protocol.md for the shared wire format). This
+Decodes frames sent by esp32-controller's ir_transmitter.py (see
+esp32-controller/docs/protocol.md for the shared wire format). This
 module doesn't know about the OLED or any other output - callers
 supply a callback to listen() and get invoked with each decoded
 command byte.
 
 Public API:
-    COMMAND_NAMES
+    COMMAND_NAMES (alias of commands.NAMES)
     decode(edge_ticks) -> command byte or None
     listen(on_command) -> None, blocks forever
     close() -> None
@@ -23,22 +23,13 @@ from time import sleep
 
 import pigpio
 
+import commands
+
 IR_RECEIVER_PIN = 24
 
-# These IDs match the command constants defined in
-# killbot-controller/src/joystick.py.
-COMMAND_NAMES = {
-    0: "STOP",
-    1: "FORWARD",
-    2: "BACKWARD",
-    3: "LEFT",
-    4: "RIGHT",
-    5: "FORWARD_LEFT",
-    6: "FORWARD_RIGHT",
-    7: "BACKWARD_LEFT",
-    8: "BACKWARD_RIGHT",
-    9: "JOYSTICK_BUTTON",
-}
+# Alias kept for backward compatibility with existing callers/docs -
+# the actual table lives in commands.py, shared with motors.py.
+COMMAND_NAMES = commands.NAMES
 
 pi = pigpio.pi()
 if not pi.connected:

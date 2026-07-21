@@ -1,6 +1,6 @@
 ## Lab 4: IR Receiver
 
-[ir_receiver.py](../../../chillbot-controller/src/ir_receiver.py)
+[ir_receiver.py](../../../pi-controller/src/ir_receiver.py)
 
 **Goal:** wire a 38 kHz IR receiver module to the Pi and decode incoming
 infrared pulses (from any standard NEC-protocol remote, or from the
@@ -62,7 +62,7 @@ background daemon instead.
 sudo apt install -y pigpio python3-pigpio
 sudo systemctl enable --now pigpiod
 
-cd chillbot-controller
+cd pi-controller
 python3 -m venv --system-site-packages .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -76,7 +76,7 @@ the venv.
 **Step 7 - The script**
 
 The decoder already lives in the repo:
-[`chillbot-controller/src/ir_receiver.py`](../../../chillbot-controller/src/ir_receiver.py).
+[`pi-controller/src/ir_receiver.py`](../../../pi-controller/src/ir_receiver.py).
 No need to write it from scratch - clone/pull the repo onto the Pi (or
 `scp` just that file over) so it's alongside this lab's venv.
 
