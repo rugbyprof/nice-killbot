@@ -61,9 +61,45 @@ already plain CPython files that can just import a shared module.
 ## Setup
 
 ```bash
-sudo apt install -y pigpio python3-pigpio i2c-tools
-sudo systemctl enable --now pigpiod
+sudo apt install -y python3-pigpio i2c-tools
+```
 
+`pigpio` (the daemon itself, as opposed to `python3-pigpio`'s Python
+bindings) is no longer packaged for Raspberry Pi OS as of Bookworm -
+upstream has been unmaintained since 2021 and doesn't support the Pi
+5's GPIO chip, so it was dropped from the repos entirely. On a Pi 4 the
+daemon still works fine, it just has to be built from source, and the
+build doesn't install a systemd unit, so that has to be created by
+hand too:
+
+```bash
+sudo apt install -y build-essential
+git clone https://github.com/joan2937/pigpio
+cd pigpio
+make -j4
+sudo make install
+
+sudo tee /etc/systemd/system/pigpiod.service > /dev/null <<'EOF'
+[Unit]
+Description=pigpio daemon
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/pigpiod
+ExecStop=/bin/systemctl kill pigpiod
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now pigpiod
+```
+
+Then set up the venv:
+
+```bash
 python3 -m venv --system-site-packages .venv
 source .venv/bin/activate
 pip install -r requirements.txt

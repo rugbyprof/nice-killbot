@@ -179,7 +179,37 @@ If a project uses `pigpio`, the daemon must also be installed and
 running (once, system-wide — not inside the venv):
 
 ```bash
-$ sudo apt install -y pigpio python3-pigpio
+$ sudo apt install -y python3-pigpio
+```
+
+As of Raspberry Pi OS Bookworm, the `pigpio` apt package (the daemon
+itself) has been dropped from the repos - upstream hasn't been
+maintained since 2021 and doesn't support the Pi 5's GPIO chip. On a Pi
+4 the daemon still works, it just has to be built from source, and the
+build doesn't set up a systemd service, so that's created by hand:
+
+```bash
+$ sudo apt install -y build-essential
+$ git clone https://github.com/joan2937/pigpio
+$ cd pigpio
+$ make -j4
+$ sudo make install
+
+$ sudo tee /etc/systemd/system/pigpiod.service > /dev/null <<'EOF'
+[Unit]
+Description=pigpio daemon
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/pigpiod
+ExecStop=/bin/systemctl kill pigpiod
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+$ sudo systemctl daemon-reload
 $ sudo systemctl enable --now pigpiod
 ```
 

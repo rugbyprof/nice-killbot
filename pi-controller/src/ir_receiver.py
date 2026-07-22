@@ -25,7 +25,7 @@ import pigpio
 
 import commands
 
-IR_RECEIVER_PIN = 24
+IR_RECEIVER_PIN = 24 # gpio 24
 
 # Alias kept for backward compatibility with existing callers/docs -
 # the actual table lives in commands.py, shared with motors.py.

@@ -11,14 +11,15 @@ that imports all three.
 import commands
 import ir_receiver
 import motors
-import oled_screen
+
+# import oled_screen
 
 
 def handle_command(command):
     name = commands.NAMES.get(command, "UNKNOWN")
     print(f"command={command:3d}  {name}")
     motors.drive(command)
-    oled_screen.show_status(name)
+    # oled_screen.show_status(name)
 
 
 def main():
