@@ -190,3 +190,9 @@ a `drive(command)` function that maps the same command IDs used by
 (skid-steer turning), wired into
 [`pi-controller/src/main.py`](../../../pi-controller/src/main.py)
 so the car actually drives in response to killbot's IR commands.
+
+Once Lab 4's IR receiver is wired too,
+[`pi-controller/src/motors_test.py`](../../../pi-controller/src/motors_test.py)
+drives this real `motors.py` directly from decoded IR commands - a
+full hardware check of both labs together before anything touches
+`main.py` (see Lab 4's Step 9).

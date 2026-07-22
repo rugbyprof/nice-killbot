@@ -59,9 +59,16 @@ alone doesn't provide - it uses the `pigpio` library and its
 background daemon instead.
 
 ```bash
-sudo apt install -y pigpio python3-pigpio
-sudo systemctl enable --now pigpiod
+sudo apt install -y python3-pigpio
+```
 
+`pigpio` (the daemon itself) isn't packaged for Raspberry Pi OS
+Bookworm onward - see [First
+Setup](../Raspberry-pi-first-setup.md#create-a-project) for building
+it from source and registering it as a systemd service. Once
+`sudo systemctl status pigpiod` shows active (running):
+
+```bash
 cd pi-controller
 python3 -m venv --system-site-packages .venv
 source .venv/bin/activate
@@ -73,64 +80,131 @@ does for `gpiozero` (see [First Setup](../Raspberry-pi-first-setup.md)):
 `python3-pigpio`, installed via `apt`, needs to be visible from inside
 the venv.
 
-**Step 7 - The script**
+**Step 7 - Bring-up test**
 
-The decoder already lives in the repo:
-[`pi-controller/src/ir_receiver.py`](../../../pi-controller/src/ir_receiver.py).
-No need to write it from scratch - clone/pull the repo onto the Pi (or
-`scp` just that file over) so it's alongside this lab's venv.
+Wiring bring-up is easier with a script that tells you *why* a frame
+failed instead of just staying silent. That's what
+[`pi-controller/src/ir_receiver_test.py`](../../../pi-controller/src/ir_receiver_test.py)
+is for - it decodes the same NEC-style frames as the production
+`ir_receiver.py`, but:
 
-It's built from a few pieces:
+- searches for the header anywhere in the captured edges instead of
+  assuming it starts at the very first one, so a stray noise edge
+  before a real frame doesn't throw off the whole decode
+- adds a pull-up (`PUD_UP`) and a 100 us glitch filter on the input,
+  which cuts down on false triggers
+- prints the specific reason a frame didn't decode (bad header, bad
+  bit timing, checksum mismatch) rather than dropping it silently
 
-```text
-decode(edge_ticks)   turn a list of edge timestamps into a command byte, or None
-listen(on_command)   block forever; call on_command(command) for each valid frame
-close()              release the pigpio connection
-```
-
-`decode()` implements the standard NEC IR protocol - a `~9000us` mark
-+ `~4500us` space header, then 16 bits (`~560us` mark + `~560us` or
-`~1690us` space, LSB-first) forming a command byte and its bitwise
-complement. Frames that don't check out (`command ^ inverted != 0xFF`,
-or timings outside the expected windows) are silently discarded rather
-than passed to `on_command`.
-
-**One inversion to keep in mind:** the receiver module flips what it
-demodulates - its `OUT` pin reads LOW while the 38 kHz carrier is
-present ("mark") and HIGH while it's absent ("space"), the opposite of
-what's actually being transmitted. `decode()` only cares about
-durations between edges, so this doesn't need special-casing in code -
-just don't be surprised if you ever probe the pin directly.
-
-`ir_receiver.py` also has its own `if __name__ == "__main__":` block,
-so it can be run standalone (just prints decoded commands) before
-wiring it into anything else - see Step 8.
+It has no dependency on `commands.py`, so it can be copied to the Pi
+and run entirely on its own - clone/pull the repo (or `scp` just that
+file over) so it's alongside this lab's venv.
 
 **Step 8 - Run it**
 
 ```bash
-python src/ir_receiver.py
+python3 src/ir_receiver_test.py
 ```
 
-Point a remote at the receiver and press a button - you should see a
-`command=` line printed. Frames with a bad checksum or malformed
-timing are silently dropped rather than printed as garbage.
+Point a remote at the receiver and press a button. A good frame looks
+like:
+
+```text
+RECEIVED: command=  1  hex=0x01  name=FORWARD  edges=36
+```
+
+A bad one tells you why, instead of just staying silent:
+
+```text
+UNDECODED: edges=30 intervals=29; too few pulse intervals (29; need at least 34)
+UNDECODED: edges=36 intervals=35; bit 4: invalid space 2400 us
+UNDECODED: edges=36 intervals=35; complement check failed: command=1 (0x01), inverse=1 (0x01)
+```
+
+Useful flags:
+
+```bash
+python3 src/ir_receiver_test.py --pin 24      # non-default wiring
+python3 src/ir_receiver_test.py --raw         # also print every decoded frame's raw durations
+python3 src/ir_receiver_test.py --idle-ms 30  # widen the gap that ends a frame
+```
+
+**One inversion to keep in mind:** the receiver module flips what it
+demodulates - its `OUT` pin reads LOW while the 38 kHz carrier is
+present ("mark") and HIGH while it's absent ("space"), the opposite of
+what's actually being transmitted. The decoder only cares about
+durations between edges, so this doesn't need special-casing in code -
+just don't be surprised if you ever probe the pin directly.
 
 **Troubleshooting**
 
 - **Nothing prints, ever:** confirm `pigpiod` is running
   (`sudo systemctl status pigpiod`), and that `OUT` is on `GPIO24`
   (physical pin 18), not swapped with `VCC`/`GND`.
-- **`Could not connect to pigpio daemon`:** the daemon isn't running -
+- **`Could not connect to pigpiod`:** the daemon isn't running -
   `sudo systemctl enable --now pigpiod`, then try again.
-- **Sporadic/garbage frames with no button pressed:** these receivers
-  pick up ambient IR noise (sunlight, some fluorescent/LED lighting).
-  This is expected - the checksum check in `decode()` filters most of
-  it out.
-- **Frames never decode even with a known-good remote:** some remotes
-  use a different protocol (not NEC). Try a different remote, or the
+- **`too few pulse intervals`:** the frame got cut off partway through
+  - weak/dying remote battery, receiver too far from the transmitter,
+  or something interrupting line of sight.
+- **`no 9 ms / 4.5 ms NEC-style header found`:** either the remote uses
+  a different protocol, or what's arriving is noise with no real frame
+  in it at all - add `--raw` to see the actual durations.
+- **`bit N: invalid mark/space`:** a timing fell outside the expected
+  window - move closer, check for interference (sunlight, some
+  fluorescent/LED lighting), and confirm the receiver is on 3.3V, not
+  5V.
+- **`complement check failed`:** the frame's shape decoded fine but the
+  checksum doesn't match - usually a marginal signal (partial dropout
+  mid-frame) rather than the wrong protocol.
+- **Sporadic/garbage frames with no button pressed:** ambient IR noise
+  landing between valid frames. Expected - a real remote or the
   killbot ESP32 transmitter (see [ESP32 Lab 2: IR
-  Transmitter](../Esp32/lab_02-ir_transmitter.md)).
+  Transmitter](../Esp32/lab_02-ir_transmitter.md)) will still decode
+  correctly.
 - **`GPIO busy` or permission errors:** make sure no other script is
   already using GPIO24, and that `python3-pigpio` is visible from your
   venv (`--system-site-packages`).
+
+**Step 9 - Full integration test (motors + IR)**
+
+With this lab and [Lab 3: Motors](./lab_03-motors.md) both wired, you
+can test the whole car end-to-end before wiring anything into
+`main.py`:
+[`pi-controller/src/motors_test.py`](../../../pi-controller/src/motors_test.py)
+combines `ir_receiver_test.py`'s decoder with the real `motors.py`, so
+every decoded IR command actually drives the wheels.
+
+**Lift the wheels off the ground before running this** - it drives all
+four wheels at full speed, the same wiring `main.py` will eventually
+use.
+
+```bash
+python3 src/motors_test.py
+```
+
+It expects the ESP32 transmitter's command numbers (`0`=`STOP` through
+`9`=`JOYSTICK_BUTTON` - see
+[esp32-controller/docs/protocol.md](../../../esp32-controller/docs/protocol.md)),
+prints each command as it changes, and stops the motors automatically
+if no valid command arrives for 0.75 seconds (transmitter switched
+off, out of range, etc.) - a dead-man safety timeout:
+
+```bash
+python3 src/motors_test.py --timeout 1.5   # more forgiving timeout
+python3 src/motors_test.py --raw           # also print raw pulse durations
+```
+
+Ctrl+C stops the motors and releases the GPIO pins before exiting,
+same as `ir_receiver_test.py`.
+
+---
+
+**Next step:** everything through Step 9 has been standalone bring-up
+and diagnostic scripts. The production pieces they stand in for -
+[`ir_receiver.py`](../../../pi-controller/src/ir_receiver.py)'s
+`decode()`/`listen()`/`close()` and
+[`motors.py`](../../../pi-controller/src/motors.py)'s
+`drive()`/`stop()` - are wired together by
+[`main.py`](../../../pi-controller/src/main.py), which also mirrors
+the current command on the OLED (see [Pi Lab 5: OLED
+Screen](./lab_05-oled_screen.md)).

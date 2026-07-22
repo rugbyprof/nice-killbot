@@ -9,9 +9,9 @@ that imports all three.
 """
 
 import commands
-import ir_receiver
 import motors
 
+# import ir_receiver
 # import oled_screen
 
 
@@ -25,7 +25,7 @@ def handle_command(command):
 def main():
     print("Chillbot ready. Waiting for IR commands.")
     print()
-    ir_receiver.listen(handle_command)
+    # ir_receiver.listen(handle_command)
 
 
 if __name__ == "__main__":
@@ -36,4 +36,4 @@ if __name__ == "__main__":
         print("Chillbot stopped.")
     finally:
         motors.stop()
-        ir_receiver.close()
+        # ir_receiver.close()
