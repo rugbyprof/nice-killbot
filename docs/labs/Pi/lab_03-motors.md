@@ -8,7 +8,7 @@ reach all four motors - this lab pairs one driver with the front axle
 and one with the rear axle, giving each of the four wheels its own
 independently-controlled channel.
 
-![Raspberry Pi 40-pin GPIO pinout](../images/pinout.png)
+<a href="https://images2.imgbox.com/b4/25/Iuw2LyrT_o.png" target="_new"><img src="https://images2.imgbox.com/b4/25/Iuw2LyrT_o.png" alt="Raspberry Pi 40-pin GPIO pinout" width="400">
 
 **Parts needed**
 
