@@ -1,6 +1,4 @@
-# SENSOR MODULES
-
-## Student Handout
+## SENSOR MODULES
 
 Using, mounting, and logging data from four common robotics sensors
 
